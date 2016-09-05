@@ -13,15 +13,37 @@ object exercise1 {
   final case class AccountID(identifier: String)
 
   trait Atm[F[_]] {
-    def withdraw(account: AccountID, amount: CashAmount): Free[F, Either[AtmError, TransactionID]]
+    def withdraw(account: AccountID, amount: CashAmount): F[Either[AtmError, TransactionID]]
 
-    def deposit(account: AccountID, amount: CashAmount): Free[F, TransactionID]
+    def deposit(account: AccountID, amount: CashAmount): F[TransactionID]
 
-    def accounts: Free[F, NonEmptyList[AccountID]]
+    def accounts: F[NonEmptyList[AccountID]]
 
-    def transfer(from: AccountID, to: AccountID, amount: CashAmount): Free[F, Either[AtmError, TransactionID]]
+    def transfer(from: AccountID, to: AccountID, amount: CashAmount): F[Either[AtmError, TransactionID]]
 
-    def balance(account: AccountID): Free[F, CashAmount]
+    def balance(account: AccountID): F[CashAmount]
+  }
+  object Atm {
+    def apply[F[_]](implicit atm: Atm[F]): Atm[F] = atm
+
+    implicit def AtmFree[F[_]: Atm]: Atm[Free[F, ?]] = new Atm[Free[F, ?]] {
+      type G[A] = Free[F, A]
+
+      def withdraw(account: AccountID, amount: CashAmount): G[Either[AtmError, TransactionID]]
+        = Free.liftF(Atm[F].withdraw(account, amount))
+
+      def deposit(account: AccountID, amount: CashAmount): G[TransactionID]
+        = Free.liftF(Atm[F].deposit(account, amount))
+
+      def accounts: G[NonEmptyList[AccountID]]
+        = Free.liftF(Atm[F].accounts)
+
+      def transfer(from: AccountID, to: AccountID, amount: CashAmount): G[Either[AtmError, TransactionID]]
+        = Free.liftF(Atm[F].transfer(from, to, amount))
+
+      def balance(account: AccountID): G[CashAmount]
+        = Free.liftF(Atm[F].balance(account))
+    }
   }
   sealed trait AtmF[A]
   object AtmF {
@@ -72,14 +94,14 @@ object exercise4 {
 
   def interpretProgram: AtmF ~> Final = ???
 
-  def exampleProgram[F[_]](implicit atm: Atm[F]): Free[F, CashAmount] = for {
+  def exampleProgram[F[_]: Monad](implicit atm: Atm[F]): F[CashAmount] = for {
     accounts <- atm.accounts
     _        <- atm.deposit(accounts.head, CashAmount())
     balance  <- atm.balance(accounts.head)
   } yield balance
 
   val exampleBalance: CashAmount =
-    exampleProgram[AtmF].foldMap[Final](interpretProgram).eval((Bank(), Log()))
+    exampleProgram[Free[AtmF, ?]].foldMap[Final](interpretProgram).eval((Bank(), Log()))
 }
 
 object exercise5 {
@@ -89,9 +111,20 @@ object exercise5 {
   import exercise4._
 
   trait Console[F[_]] {
-    def readLine: Free[F, String]
+    def readLine: F[String]
 
-    def println(line: String): Free[F, Unit]
+    def println(line: String): F[Unit]
+  }
+  object Console {
+    def apply[F[_]](implicit console: Console[F]): Console[F] = console
+
+    implicit def ConsoleFree[F[_]: Console]: Console[Free[F, ?]] = new Console[Free[F, ?]] {
+      type G[A] = Free[F, A]
+
+      def readLine: G[String] = Free.liftF(Console[F].readLine)
+
+      def println(line: String): G[Unit] = Free.liftF(Console[F].println(line))
+    }
   }
   sealed trait ConsoleF[A]
   object ConsoleF {
