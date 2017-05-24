@@ -56,6 +56,8 @@ object exercise3 {
     lazy val run = run0()
   }
 
+
+
   final case class Thunk[A](run: () => A)
 
   implicit val MonadThunk: Monad[Thunk] = ???
