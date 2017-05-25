@@ -53,6 +53,34 @@ object exercise4 {
     def pop[A](s: Stack[A]): Option[(A, Stack[A])]
   }
 
+  trait SmartList[A] { self =>
+    type A0
+
+    val list : List[A0]
+
+    val f0 : A0 => A
+
+    def run: List[A] = list.map(f0)
+
+    def map[B](f: A => B): SmartList[B] =
+      new SmartList[B] {
+        type A0 = self.A0
+
+        val list = self.list
+
+        val f0 = self.f0.andThen(f)
+      }
+  }
+  object SmartList {
+    def apply[A](l: List[A]): SmartList[A] = new SmartList[A] {
+      type A0 = A
+
+      val f0 = (a: A) => a
+
+      val list = l
+    }
+  }
+
   trait FileSystem {
     // ???
   }
