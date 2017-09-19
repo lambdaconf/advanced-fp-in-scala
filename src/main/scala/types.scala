@@ -88,10 +88,3 @@ object exercise5 {
   // transformAndExtract[String](strIntMagicBox)(length)
 
 }
-
-
-object exercise51 {
-  trait FileSystem {
-    // ???
-  }
-}
