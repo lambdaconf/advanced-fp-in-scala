@@ -2,9 +2,7 @@ package lambdaconf.patterns
 
 import matryoshka._
 import monocle._
-import scalaz._
-
-import Scalaz._
+import scalaz._, Scalaz._, concurrent.Task
 
 object exercise1 {
 
@@ -69,53 +67,34 @@ object exercise2 {
   def toBasket(maybeItem: Option[Item]): Basket = ???
 }
 
-object exerciseA {
-  def readRowCol(): (Int, Int) = {
-    println("Please enter a row:")
-    val row = readLine()
-    println("Please enter a column:")
-    val col = readLine()
-    (row.toInt, col.toInt)
-  }
-}
-
-object exerciseB {
-  sealed trait Node
-  final case object Root extends Node
-  final case class Child(parent: Node, name: String) extends Node
-
-  implicit val NodeMonoid: Monoid[Node] = ???
-}
-
 object exercise3 {
-  final case class Thunk[A](run: () => A)
 
-  implicit val MonadThunk: Monad[Thunk] = ???
+  /** What is the space of possible solutions of this method */
+  def sum(i1: Int, i2: Int): Int = ???
+
+  /** Write abstract version of method sum. What is the space of possible solutions of its body? */
+  // def sum(???): ??? = ???
 }
 
 object exercise4 {
-  def filter[A](f: A => Boolean, l: List[A]): List[A] = {
-    val foldable = Foldable[List]
 
-    ???
-  }
+  /** What is the space of possible solutions of this method */
+  def sum(list: List[Int]): Int =
+    list.fold(0)(_ + _)
+
+  /** Write the most abstract version of method sum. What is the space of possible solutions of its body? */
+  // def sum(???): ??? = ???
 }
 
 object exercise5 {
-  trait List[A] { self =>
-    def fold[Z](nil: => Z, cons: (Z, A) => Z): Z
 
-    final def :: (next: A): List[A] = new List[A] {
-      def fold[Z](nil: => Z, cons: (Z, A) => Z): Z = {
-        cons(self.fold(nil, cons), next)
-      }
-    }
-  }
-  object List {
-    def empty[A]: List[A] = new List[A] {
-      def fold[Z](nil: => Z, cons: (Z, A) => Z): Z = nil
-    }
-  }
+  /** problem 1 */
+  val problem1: Option[Option[String]] = Some(Some("hello"))
+  val solution1: Option[String] = ???
 
-  implicit val ListTraverse: Traverse[List] = ???
+  /** problem 2 */
+  val problem2: List[Task[Int]] = List(
+    Task.now(1), Task.now(3)
+  )
+  val solution2: Task[List[Int]] = ???
 }
