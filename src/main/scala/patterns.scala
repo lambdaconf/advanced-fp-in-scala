@@ -98,3 +98,27 @@ object exercise5 {
   )
   val solution2: Task[List[Int]] = ???
 }
+
+object exercise6 {
+
+  val plus: (Int, Int) => Int = _ + _
+
+  def plusOperation[F[_] : Apply](
+    f1: F[Int], f2: F[Int]
+  ): F[Int] = (f1 |@| f2)(plus)
+
+  /** second argument not closed over F, what now? */
+  object problem1 {
+    def plusOperation[F[_]](
+      f1: F[Int], i: Int
+    ): F[Int] = ???
+  }
+
+  /** we get new parameter seed F[String], last paramter is now String => F[Int]... can you make it work? */
+  object problem2 {
+    def plusOperation[F[_]](
+      seed: F[String], f1: F[Int], f2: String => F[Int]
+    ): F[Int] = ???
+  }
+}
+
