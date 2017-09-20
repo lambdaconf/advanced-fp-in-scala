@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "com.github.julien-truffaut"  %%  "monocle-refined" % monocleVersion,
   "com.github.julien-truffaut"  %%  "monocle-law"     % monocleVersion % "test",
   "org.scalaz"                  %%  "scalaz-core"     % scalazVersion,
+  "org.scalaz"                  %%  "scalaz-concurrent" % scalazVersion,
   "com.slamdata"                %%  "matryoshka-core" % matryoshkaVersion
 )
 
