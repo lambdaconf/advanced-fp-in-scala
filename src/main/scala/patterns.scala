@@ -97,6 +97,16 @@ object exercise5 {
     Task.now(1), Task.now(3)
   )
   val solution2: Task[List[Int]] = ???
+
+  /** problem 3 */
+  case class User(id: Int)
+  val ids = List(1, 2, 3)
+  val fetch: Int => Task[User] = (id: Int) => Task.delay {
+    User(id)
+  }
+
+  val solution: Task[List[User]] = ???
+
 }
 
 object exercise6 {
